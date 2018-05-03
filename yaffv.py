@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import tempfile
 
 import numpy as np
 import os
@@ -13,6 +14,7 @@ from PIL import Image
 
 class ImageViewer(QMainWindow):
     def __init__(self):
+        self.temp_image_file = os.path.join(tempfile.gettempdir(), 'yaffv_current.jpg')
         super(ImageViewer, self).__init__()
         self.scaleFactor = 0.0
         self.setup_blank_background()
@@ -94,7 +96,7 @@ class ImageViewer(QMainWindow):
             image = None
             try:
                 self._save_tmp_jpg_from_fits(fileName)
-                image = QImage('/tmp/yaffv-current.jpg')
+                image = QImage(self.temp_image_file)
             except Exception as inst:
                 print(inst)
             if not image or image.isNull():
@@ -124,7 +126,7 @@ class ImageViewer(QMainWindow):
             data = (data - vmin) / (vmax - vmin)
             data = (255 * data).astype(np.uint8)
             image = Image.fromarray(data, 'L')
-            image.save('/tmp/yaffv-current.jpg')
+            image.save(self.temp_image_file)
 
     def zoomIn(self):
         self.scaleImage(1.25)
