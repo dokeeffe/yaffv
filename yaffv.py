@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 import tempfile
-
 import numpy as np
 import os
 from PyQt5.QtCore import QDir, Qt
