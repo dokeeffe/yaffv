@@ -20,6 +20,7 @@ class ImageViewer(QMainWindow):
         self.createActions()
         self.createMenus()
         self.resize(1000, 800)
+        self.file_count_tracker = ''
 
     def setup_blank_background(self):
         self.imageLabel = QLabel()
@@ -78,6 +79,7 @@ class ImageViewer(QMainWindow):
         if index < 0:
             index = len(files) - 1
         next = files[index]
+        self.file_count_tracker = 'file {} of {}'.format(index, len(files))
         return os.path.join(dir, next)
 
     def open(self):
@@ -92,6 +94,7 @@ class ImageViewer(QMainWindow):
     def display(self, fileName):
         self.current_file = fileName
         if fileName:
+            self.setWindowTitle('LOADING....')
             image = None
             try:
                 self._save_tmp_jpg_from_fits(fileName)
@@ -111,15 +114,20 @@ class ImageViewer(QMainWindow):
             self.updateActions()
             if not self.fitToWindowAct.isChecked():
                 self.imageLabel.adjustSize()
-            self.setWindowTitle(os.path.basename(fileName))
+            self.setWindowTitle('{}  {}'.format(self.file_count_tracker, os.path.basename(fileName)))
 
     def _save_tmp_jpg_from_fits(self, fileName):
-        vmax = 8000
-        vmin = 400
         with fits.open(fileName) as hdul:
             data = hdul[0].data
             if data is None:
                 data = hdul[1].data
+
+            clean = data[np.isfinite(data)]
+            mean = clean.mean()
+            std = clean.std()
+            vmin = mean - std
+            vmax = mean + std * 3
+
             data[data > vmax] = vmax
             data[data < vmin] = vmin
             data = (data - vmin) / (vmax - vmin)
