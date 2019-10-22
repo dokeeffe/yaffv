@@ -60,7 +60,7 @@ class ThumbGenerator:
     def generate(self, path):
         data_files = glob.glob(path)
 
-        with Pool(5) as p:
+        with Pool(4) as p:
             print(p.map(self.generate_thumb, data_files))
 
 
