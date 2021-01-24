@@ -61,7 +61,7 @@ class ThumbGenerator:
         data_files = glob.glob(path)
 
         with Pool(4) as p:
-            print(p.map(self.generate_thumb, data_files))
+            p.map(self.generate_thumb, data_files)
 
 
 
@@ -70,4 +70,4 @@ if __name__ == '__main__':
     import sys
 
     app = ThumbGenerator()
-    sys.exit(app.generate('/home/dokeeffe/pCloudDrive/ObservatoryPC/CalibratedLight/**/*.fits'))
+    sys.exit(app.generate('/home/dokeeffe/Pictures/CalibratedLight/**/*.fits'))
